@@ -107,7 +107,8 @@ window.createLocalStorageModel = function() {
 		save('presents', presents);
 		return presents[matching[0]];
 	};
-	var viewModel = new ViewModel(function(t) {return confirm(t);}, makeFakeAsync(addPresent), makeFakeAsync(editPresent));
+	var refresh = loadPresents;
+	var viewModel = new ViewModel(function(t) {return confirm(t);}, makeFakeAsync(addPresent), makeFakeAsync(editPresent), makeFakeAsync(refresh));
 	viewModel.presents(loadPresents());
 	return viewModel;
 };

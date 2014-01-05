@@ -12,8 +12,8 @@
 	<script src="localstorage-model.js"></script>
 </head>
 <body>
-Connecté en tant que: <select data-bind="options: Object.keys(users()), value: loggedInUser, optionsText:function(id) {return users()[id].name;}"></select> 
-	<br><select class="form-control input-large" data-bind="options: lists(), value: selectedList, optionsValue: 'id', optionsText:'label'"></select> 
+Connecté en tant que: <select data-bind="options: Object.keys(users()), value: loggedInUser, optionsText:function(id) {return users()[id].name;}, event: {change: refreshModel}"></select> 
+	<br><select class="form-control input-large" data-bind="options: lists(), value: selectedList, optionsValue: 'id', optionsText:'label', event: {change: refreshModel}"></select> 
 	<ul class="list-group" data-bind="foreach: displayedPresents()">
 		<!-- the present -->
 		<li class="present list-group-item" data-bind="event: { dblclick: function(){$root.editPresent($data);} }, css: { offered: $root.displayPresentAsOffered($data) , deleted: deletedBy }">

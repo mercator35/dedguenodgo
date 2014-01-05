@@ -3,10 +3,11 @@
  * @param addPresentCommand function(present): JQueryPromise
  * */
 
-function ViewModel(confirm, addPresentCommand, editPresentCommand) {
+function ViewModel(confirm, addPresentCommand, editPresentCommand, refresh) {
 	this.confirm = confirm;
 	this.addPresentCommand = addPresentCommand;
 	this.editPresentCommand = editPresentCommand;
+	this.refresh = refresh;
 	this.users = ko.observable({
 		'idNicolas': {
 			id: 'idNicolas',
@@ -317,5 +318,9 @@ ViewModel.prototype = {
 		this.successMessage(null);
 		this.errorMessage(null);
 		this.undoAction(null);
+	},
+	refreshModel: function() {
+		var self = this;
+		this.refresh().done(function(presents){self.presents(presents);});
 	}
 };

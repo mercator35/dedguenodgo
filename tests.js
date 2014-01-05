@@ -3,7 +3,8 @@ describe("The view model", function() {
 	var throwIfConfirm, nextConfirmAnswer;
 	var addPresentCall, addPresentDfd;
 	var editPresentCall, editPresentDfd;
-
+	var refreshDfd, refreshList;
+	
 	beforeEach(function() {
 		throwIfConfirm = true;
 		nextConfirmAnswer = false;
@@ -11,6 +12,9 @@ describe("The view model", function() {
 		addPresentDfd = null;
 		editPresentCall = null;
 		editPresentDfd = null;
+		refreshDfd = null;
+		refreshList = null;
+		
 		var confirm = function(text) {
 			if (throwIfConfirm) {
 				throw new Error('test triggered confirm but throwIfConfirm == true');
@@ -27,7 +31,14 @@ describe("The view model", function() {
 			editPresentDfd = $.Deferred();
 			return editPresentDfd.promise();
 		};
-		viewModel = new ViewModel(confirm, addPresentCommand, editPresentCommand);
+		var refresh = function() {
+			var newList = refreshList ? refreshList : iewModel.presents;
+			refreshDfd = $.Deferred();
+			refreshDfd.resolve(newList);
+			return refreshDfd.promise();
+		};
+		
+		viewModel = new ViewModel(confirm, addPresentCommand, editPresentCommand, refresh);
 		viewModel.users({
 			'idNicolas': {
 				id: 'idNicolas',
@@ -177,4 +188,19 @@ describe("The view model", function() {
 		viewModel.togglePresentOffered(viewModel.presents()[2]);
 	expect(viewModel.presents()[2].offeredBy).toEqual('idOlivier');	
 	});
+	
+	it("take into account external changes of the present list", function() {
+		viewModel.loggedInUser("idElisa");
+		expect(viewModel.displayPresentAsOffered(viewModel.presents()[1])).toEqual(null);
+		
+		// clone and modify list
+		refreshList = JSON.parse(ko.toJSON(viewModel.presents));
+		refreshList[1].offeredBy = "idNicolas";
+		refreshList[1].givenDate = new Date();
+		
+		// Refreshing is normally triggered on UI event
+		viewModel.refreshModel();
+		expect(viewModel.displayPresentAsOffered(viewModel.presents()[1])).not.toEqual(null);
+	});
+	
 });
